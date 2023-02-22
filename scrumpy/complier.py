@@ -26,11 +26,35 @@ def _decode_var_value(var_value) -> Any:
 
 def _assign_var(var_name: str, var_value: Any) -> None:
     VARS[var_name] = _decode_var_value(var_value)
+    var = VARS[var_name]
+    print(f"{var=}")
+    if type(var) == list:
+        return
+    values = var.split(" ")
+    values_iter = iter(values)
+    if not len(values) % 3:
+        for i in range(len(values)):
+            value1 = next(values_iter)
+            operation = next(values_iter)
+            value2 = next(values_iter)
+            print("")
+            # print(f"{values=}")
+            # print(f"{next(values_iter)=}")
+
+    # segments_if_list = var_value.split(".")
+    # if len(segments_if_list) > 1:
+    #     print(f"{var_value=}")
+    #     for list_name, index in zip(*[iter(segments_if_list)]*2):
+    #         print(f"{list_name=}, {index=}")
+    #         index = int(index.split(" ")[0].replace(",",""))
+    #         print(f"{index=}")
+    #         var_value = _decode_var_value(VARS[list_name][int(index)])
+    # VARS[var_name] = _decode_var_value(var_value)
 
 def _output(output: str) -> None:
     if output in VARS:
         return print(VARS[str(output)])
-    # print(f"{VARS=}")
+    print(f"{VARS=}")
     print(f"{output=}")
 
 def _unpack_line(line: str) -> None:
