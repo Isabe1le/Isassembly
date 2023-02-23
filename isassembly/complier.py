@@ -120,6 +120,8 @@ def _output(output: str) -> None:
     return print(f"OUT: {final_out}")
 
 def _unpack_line(line: str) -> None:
+    for tvar in VARS:
+        VARS[tvar] = _fully_decode(VARS[tvar])
     if line.startswith("#"): return
     line_segments_if_var = line.split(" = ")
     if len(line_segments_if_var) == 2:

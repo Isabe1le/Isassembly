@@ -1,5 +1,6 @@
 a = 0
 b = 1
+
 c = 0
 
 out a
@@ -7,8 +8,8 @@ out b
 
 startpoint fib
 c = a + b
-out c
 a = b
-b = c + b
+b = c
+out c
 endpoint fib
 goto fib until c > 1000
