@@ -130,5 +130,4 @@ outstr You can only take 1, 4 or 9 coins at once.
 outstr The pile must have at least that many coins.
 outstr The player to take the last coin(s) from the last pile wins.
 
-start = 0
-goto mainGameLoop if start = 0
+goto mainGameLoop if 0 = 0
