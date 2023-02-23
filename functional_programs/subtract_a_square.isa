@@ -1,0 +1,134 @@
+coinHeapOne = 13
+coinHeapTwo = 13
+coinHeapThree = 13
+currentPlayer = 1
+tempNextPlayer = 0
+
+selectedHeap = 0
+totalRemainingCoins = coinHeapOne + coinHeapTwo + coinHeapThree
+takenCoins = 0
+validCoinAmount = 0
+
+startpoint invalidArgument
+outstr You cannot take coins from that pile.
+pile = pile + takenCoins
+endpoint invalidArgument
+
+startpoint swapToPlayer1
+tempNextPlayer = 1
+endpoint swapToPlayer1
+
+startpoint swapToPlayer2
+tempNextPlayer = 2
+endpoint swapToPlayer2
+
+startpoint gameWon
+outstr You won!
+TERMINATE
+endpoint gameWon
+
+startpoint successOutput
+outstr Success!
+goto swapToPlayer1 if currentPlayer = 2
+goto swapToPlayer2 if currentPlayer = 1
+currentPlayer = tempNextPlayer
+endpoint successOutput
+
+startpoint takeFromHeapOne
+validCoinAmount = 0
+pile = coinHeapOne - takenCoins
+goto invalidArgument if pile < 0
+goto successOutput if pile >= 0
+coinHeapOne = pile
+coinHeaps = coinHeapOne, coinHeapTwo, coinHeapThree
+out coinHeaps
+endpoint takeFromHeapOne
+
+startpoint takeFromHeapTwo
+validCoinAmount = 0
+pile = coinHeapTwo - takenCoins
+goto invalidArgument if pile < 0
+goto successOutput if pile >= 0
+coinHeapTwo = pile
+coinHeaps = coinHeapOne, coinHeapTwo, coinHeapThree
+out coinHeaps
+endpoint takeFromHeapTwo
+
+startpoint takeFromHeapThree
+validCoinAmount = 0
+pile = coinHeapThree - takenCoins
+goto invalidArgument if pile < 0
+goto successOutput if pile >= 0
+coinHeapThree = pile
+coinHeaps = coinHeapOne, coinHeapTwo, coinHeapThree
+out coinHeaps
+endpoint takeFromHeapThree
+
+startpoint invalidPileNumber
+outstr That's not a valid pile number, please try again.
+endpoint invalidPileNumber
+
+startpoint invalidCoinNumber
+endpoint invalidCoinNumber
+
+startpoint selectCoinAmountHeapOne
+outstr How many coins would you like to take from heap one?
+outstr 1, 4 or 9?
+input takenCoins
+# 0 = true | 1 = false
+validCoinAmount = 1
+goto takeFromHeapOne if takenCoins = 1
+goto takeFromHeapOne if takenCoins = 4
+goto takeFromHeapOne if takenCoins = 9
+goto invalidCoinNumber if validCoinAmount = 1
+endpoint selectCoinAmountHeapOne
+
+startpoint selectCoinAmountHeapTwo
+outstr How many coins would you like to take from heap two?
+outstr 1, 4 or 9?
+input takenCoins
+# 0 = true | 1 = false
+validCoinAmount = 1
+goto takeFromHeapTwo if takenCoins = 1
+goto takeFromHeapTwo if takenCoins = 4
+goto takeFromHeapTwo if takenCoins = 9
+goto invalidCoinNumber if validCoinAmount = 1
+endpoint selectCoinAmountHeapTwo
+
+startpoint selectCoinAmountHeapThree
+outstr How many coins would you like to take from heap three?
+outstr 1, 4 or 9?
+input takenCoins
+# 0 = true | 1 = false
+validCoinAmount = 1
+goto takeFromHeapThree if takenCoins = 1
+goto takeFromHeapThree if takenCoins = 4
+goto takeFromHeapThree if takenCoins = 9
+goto invalidCoinNumber if validCoinAmount = 1
+endpoint selectCoinAmountHeapThree
+
+startpoint mainGameLoop
+outstr Current player is:
+out currentPlayer
+outstr The current piles are:
+coinHeaps = coinHeapOne, coinHeapTwo, coinHeapThree
+out coinHeaps
+outstr From what pile would you like to take coins?
+outstr Pile 1, 2 or 3.
+input selectedHeap
+goto invalidPileNumber if selectedHeap = 0
+goto invalidPileNumber if selectedHeap > 3
+goto selectCoinAmountHeapOne if selectedHeap = 1
+goto selectCoinAmountHeapTwo if selectedHeap = 2
+goto selectCoinAmountHeapThree if selectedHeap = 3
+totalRemainingCoins = coinHeapOne + coinHeapTwo + coinHeapThree
+goto gameWon if totalRemainingCoins = 0
+goto mainGameLoop if 1 = 1
+endpoint mainGameLoop
+
+outstr You can only take 1, 4 or 9 coins at once.
+outstr The pile must have at least that many coins.
+outstr The player to take the last coin(s) from the last pile wins.
+
+start = 0
+goto mainGameLoop if start = 0

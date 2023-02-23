@@ -30,6 +30,8 @@ def _decode_value(value: Any) -> None:
         var_name, var_index = value.split(".")
         var_index = _decode_value(var_index)
         return _decode_value(VARS[var_name][var_index])
+    elif isinstance(value, list):
+        return value
     elif value in VARS:
         return _decode_value(VARS[value])
     else:
@@ -43,7 +45,6 @@ def _decode_var_value(var_value: Any) -> Any:
     var_value_list_segments = var_value.split(", ")
     if len(var_value_list_segments) == 1:
         if var_value_list_segments[0][-1] == ",":
-            print(f"{var_value_list_segments=}")
             return var_value_list_segments[0][:-1]
     if len(var_value_list_segments) > 1:
         temp = []
@@ -54,7 +55,6 @@ def _decode_var_value(var_value: Any) -> Any:
 
 def _assign_var(var_name: str, var_value: Any) -> None:
     var = var_value
-    # print(f"{var=}")
     if isinstance(_decode_var_value(var_value), list):
         VARS[var_name] = _decode_var_value(var_value)
         return
@@ -66,7 +66,6 @@ def _assign_var(var_name: str, var_value: Any) -> None:
         if v in OPERATIONS:
             var_operation = v
             var_next = _decode_value(var.split(" ")[i+1])
-            # print(var.split(" "))
             var_previous = var_summation or _decode_value(var.split(" ")[i-1])
             # print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
 
@@ -97,7 +96,7 @@ def _assign_var(var_name: str, var_value: Any) -> None:
                     var_summation **= var_next
     if var_operation is not None:
         VARS[var_name] = var_summation
-        return
+        return  
     VARS[var_name] = _decode_var_value(var_value)
 
 def _fully_decode(item: str) -> int:
@@ -129,35 +128,62 @@ def _unpack_line(line: str) -> None:
         return _assign_var(line_segments_if_var[0], line_segments_if_var[1])
     line_segments = line.split(" ")
     if line_segments[0] == "out":
-        return _output(list(line_segments[1:])[0])
+        return _output(list(line_segments)[1])
     elif line_segments[0] == "outstr":
         return print(line[7::])
+    elif line_segments[0] == "TERMINATE":
+        exit()
 
 def _run(content: Union[str, list]) -> None:
     if isinstance(content, str):
         lines = content.split("\n")
     else:
         lines = content
-    no_run = False
+    current_pointer = None
+    currently_saving_for_loop = False
     for line_no, line in enumerate(lines):
+        # print(f"{line_no} | RUNNING LINE: {line}")
         if line.startswith("startpoint"):
-            POINTS[line.split(" ")[1]] = {
+            current_pointer = line.split(" ")[1]
+            POINTS[current_pointer] = {
                 "start": line_no,
                 "end": None,
                 "lines": []
             }
-            no_run = True
+            currently_saving_for_loop = True
         elif line.startswith("endpoint"):
             POINTS[line.split(" ")[1]]["end"] = line_no
-            no_run = False
-        elif line.startswith("goto"):
-            _, point, branchtype, arg1, condition, arg2 = line.split(" ")
-            for pline_no, pline in enumerate(lines):
-                if pline_no > POINTS[point]["start"] and pline_no < POINTS[point]["end"]:
-                    POINTS[point]["lines"].append(pline)            
-            if branchtype == "until":
-                run = True
-                while run:
+            currently_saving_for_loop = False
+        elif not currently_saving_for_loop:
+            if line.startswith("goto"):
+                _, point, branchtype, arg1, condition, arg2 = line.split(" ")
+                if branchtype == "until":
+                    run = True
+                    while run:
+                        arg1_decode = _fully_decode(arg1)
+                        if "." in str(arg1_decode):
+                            arg1_decode = float(arg1_decode)
+                        else:
+                            arg1_decode = int(arg1_decode)
+
+                        arg2_decode = _fully_decode(arg2)
+                        if "." in str(arg2_decode):
+                            arg2_decode = float(arg2_decode)
+                        else:
+                            arg2_decode = int(arg2_decode)
+                        if condition == ">":
+                            if arg1_decode > arg2_decode: run = False
+                        elif condition == "=":
+                            if arg1_decode == arg2_decode: run = False
+                        elif condition == ">=":
+                            if arg1_decode >= arg2_decode: run = False
+                        elif condition == "<":
+                            if arg1_decode < arg2_decode: run = False
+                        elif condition == "<=":
+                            if arg1_decode <= arg2_decode: run = False
+                        _run(POINTS[point]["lines"])
+                elif branchtype == "if":
+                    run = False
                     arg1_decode = _fully_decode(arg1)
                     if "." in str(arg1_decode):
                         arg1_decode = float(arg1_decode)
@@ -170,44 +196,20 @@ def _run(content: Union[str, list]) -> None:
                     else:
                         arg2_decode = int(arg2_decode)
                     if condition == ">":
-                        if arg1_decode > arg2_decode: run = False
+                        if arg1_decode > arg2_decode: run = True
                     elif condition == "=":
-                        if arg1_decode == arg2_decode: run = False
+                        if arg1_decode == arg2_decode: run = True
                     elif condition == ">=":
-                        if arg1_decode >= arg2_decode: run = False
+                        if arg1_decode >= arg2_decode: run = True
                     elif condition == "<":
-                        if arg1_decode < arg2_decode: run = False
+                        if arg1_decode < arg2_decode: run = True
                     elif condition == "<=":
-                        if arg1_decode <= arg2_decode: run = False
-                    _run(POINTS[point]["lines"])
-            elif branchtype == "if":
-                run = False
-                arg1_decode = _fully_decode(arg1)
-                if "." in str(arg1_decode):
-                    arg1_decode = float(arg1_decode)
-                else:
-                    arg1_decode = int(arg1_decode)
-
-                arg2_decode = _fully_decode(arg2)
-                if "." in str(arg2_decode):
-                    arg2_decode = float(arg2_decode)
-                else:
-                    arg2_decode = int(arg2_decode)
-                if condition == ">":
-                    if arg1_decode > arg2_decode: run = True
-                elif condition == "=":
-                    if arg1_decode == arg2_decode: run = True
-                elif condition == ">=":
-                    if arg1_decode >= arg2_decode: run = True
-                elif condition == "<":
-                    if arg1_decode < arg2_decode: run = True
-                elif condition == "<=":
-                    if arg1_decode <= arg2_decode: run = True
-                if run:
-                    _run(POINTS[point]["lines"])
-        elif line.startswith("input"):
-            _, var_name = line.split(" ")
-            VARS[var_name] = _fully_decode(input(""))
-
-        if not no_run:
+                        if arg1_decode <= arg2_decode: run = True
+                    if run:
+                        _run(POINTS[point]["lines"])
+            elif line.startswith("input"):
+                _, var_name = line.split(" ")
+                VARS[var_name] = _fully_decode(input(">> "))
             _unpack_line(line)
+        elif currently_saving_for_loop:
+            POINTS[current_pointer]["lines"].append(line)
