@@ -61,7 +61,7 @@ p = o.1 + k
 # Correct output: 15
 out c
 
-# Correct output: [3, 12]
+# Correct output: 3, 12
 out f
 
 # Correct output: 19
@@ -82,4 +82,5 @@ out n
 # Correct output: 9
 out p
 
+# Correct output: 4
 out i.j

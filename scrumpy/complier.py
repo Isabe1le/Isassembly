@@ -47,7 +47,7 @@ def _decode_var_value(var_value: Any) -> Any:
 def _assign_var(var_name: str, var_value: Any) -> None:
     VARS[var_name] = _decode_var_value(var_value)
     var = VARS[var_name]
-    print(f"{var=}")
+    # print(f"{var=}")
     if type(var) == list:
         return
     var_summation = None
@@ -64,7 +64,12 @@ def _assign_var(var_name: str, var_value: Any) -> None:
                     var_summation = var_previous + var_next
                 else: 
                     var_summation += var_next
-            print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
+            if var_operation == "-":
+                if var_summation is None:
+                    var_summation = var_previous - var_next
+                else: 
+                    var_summation -= var_next
+            # print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
     if var_operation is not None:
         VARS[var_name] = var_summation
 

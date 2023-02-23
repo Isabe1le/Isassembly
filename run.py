@@ -1,2 +1,2 @@
 from scrumpy import complier
-complier.run("example.scpy")
+complier.run("test_sub.scpy")
