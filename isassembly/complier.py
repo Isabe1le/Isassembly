@@ -1,5 +1,6 @@
 from typing import (
     Any,
+    Union,
 )
 
 OPERATIONS = [
@@ -132,27 +133,55 @@ def _unpack_line(line: str) -> None:
     elif line_segments[0] == "outstr":
         return print(line[7::])
 
-def _run(content: str) -> None:
-    lines = content.split("\n")
+def _run(content: Union[str, list]) -> None:
+    if isinstance(content, str):
+        lines = content.split("\n")
+    else:
+        lines = content
     no_run = False
     for line_no, line in enumerate(lines):
         if line.startswith("startpoint"):
             POINTS[line.split(" ")[1]] = {
                 "start": line_no,
-                "end": None
+                "end": None,
+                "lines": []
             }
             no_run = True
         elif line.startswith("endpoint"):
             POINTS[line.split(" ")[1]]["end"] = line_no
             no_run = False
         elif line.startswith("goto"):
-            _, point, _, arg1, condition, arg2 = line.split(" ")
-            plines = []
+            _, point, branchtype, arg1, condition, arg2 = line.split(" ")
             for pline_no, pline in enumerate(lines):
                 if pline_no > POINTS[point]["start"] and pline_no < POINTS[point]["end"]:
-                    plines.append(pline)
-            run = True
-            while run:
+                    POINTS[point]["lines"].append(pline)            
+            if branchtype == "until":
+                run = True
+                while run:
+                    arg1_decode = _fully_decode(arg1)
+                    if "." in str(arg1_decode):
+                        arg1_decode = float(arg1_decode)
+                    else:
+                        arg1_decode = int(arg1_decode)
+
+                    arg2_decode = _fully_decode(arg2)
+                    if "." in str(arg2_decode):
+                        arg2_decode = float(arg2_decode)
+                    else:
+                        arg2_decode = int(arg2_decode)
+                    if condition == ">":
+                        if arg1_decode > arg2_decode: run = False
+                    elif condition == "=":
+                        if arg1_decode == arg2_decode: run = False
+                    elif condition == ">=":
+                        if arg1_decode >= arg2_decode: run = False
+                    elif condition == "<":
+                        if arg1_decode < arg2_decode: run = False
+                    elif condition == "<=":
+                        if arg1_decode <= arg2_decode: run = False
+                    _run(POINTS[point]["lines"])
+            elif branchtype == "if":
+                run = False
                 arg1_decode = _fully_decode(arg1)
                 if "." in str(arg1_decode):
                     arg1_decode = float(arg1_decode)
@@ -165,17 +194,17 @@ def _run(content: str) -> None:
                 else:
                     arg2_decode = int(arg2_decode)
                 if condition == ">":
-                    if arg1_decode > arg2_decode: run = False
+                    if arg1_decode > arg2_decode: run = True
                 elif condition == "=":
-                    if arg1_decode == arg2_decode: run = False
+                    if arg1_decode == arg2_decode: run = True
                 elif condition == ">=":
-                    if arg1_decode >= arg2_decode: run = False
+                    if arg1_decode >= arg2_decode: run = True
                 elif condition == "<":
-                    if arg1_decode < arg2_decode: run = False
+                    if arg1_decode < arg2_decode: run = True
                 elif condition == "<=":
-                    if arg1_decode <= arg2_decode: run = False
-                for pline in plines:
-                    _unpack_line(pline)
+                    if arg1_decode <= arg2_decode: run = True
+                if run:
+                    _run(POINTS[point]["lines"])
         elif line.startswith("input"):
             _, var_name = line.split(" ")
             VARS[var_name] = _fully_decode(input(""))

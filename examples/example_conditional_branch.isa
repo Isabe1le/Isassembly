@@ -1,0 +1,14 @@
+a = 0
+
+startpoint sayhello
+outstr Hello world!
+endpoint sayhello
+
+startpoint addone
+a = a + 1
+out a
+goto sayhello if a = 3
+endpoint addone
+goto addone until a = 5
+
+outstr Done!
