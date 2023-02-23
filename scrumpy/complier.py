@@ -7,6 +7,7 @@ OPERATIONS = [
     "-",
     "/",
     "*",
+    "**",
 ]
 
 VARS = {}
@@ -86,6 +87,11 @@ def _assign_var(var_name: str, var_value: Any) -> None:
                     var_summation = var_previous * var_next
                 else: 
                     var_summation *= var_next
+            elif var_operation == "**":
+                if var_summation is None:
+                    var_summation = var_previous ** var_next
+                else: 
+                    var_summation **= var_next
     if var_operation is not None:
         VARS[var_name] = var_summation
 
