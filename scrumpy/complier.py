@@ -64,32 +64,9 @@ def _assign_var(var_name: str, var_value: Any) -> None:
                     var_summation = var_previous + var_next
                 else: 
                     var_summation += var_next
-                # print(f"{var_summation=}\n{var_operation=}\n{var_next=}\n{var_previous=}")
             print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
     if var_operation is not None:
         VARS[var_name] = var_summation
-    # if 
-    # values = var.split(" ")
-    # values_iter = iter(values)
-    # if len(values) >= 3:
-    #     for i in range(int(len(values)/3)):
-    #         print(values)
-    #         value1 = next(values_iter)
-    #         operation = next(values_iter)
-    #         value2 = next(values_iter)
-    #         print(f"{value1=}\n{operation=}\n{value2=}")
-    #         # print(f"{values=}")
-    #         # print(f"{next(values_iter)=}")
-
-    # segments_if_list = var_value.split(".")
-    # if len(segments_if_list) > 1:
-    #     print(f"{var_value=}")
-    #     for list_name, index in zip(*[iter(segments_if_list)]*2):
-    #         print(f"{list_name=}, {index=}")
-    #         index = int(index.split(" ")[0].replace(",",""))
-    #         print(f"{index=}")
-    #         var_value = _decode_var_value(VARS[list_name][int(index)])
-    # VARS[var_name] = _decode_var_value(var_value)
 
 def _fully_decode(item: str) -> int:
     while True:
