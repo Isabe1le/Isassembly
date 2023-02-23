@@ -1,10 +1,85 @@
 a = 10
 b = 5
+
+#   10 + 5 (15)
 c = a + b
 
+# List [1, 2, 3]
 d = 1, 2, 3
+
+# Index 1 of d + c 
+# i.e: 2 + c
+#    = 2 + 15
+#    = 17
 e = d.1 + c
+
+# List of 2 of d, 12
+# i.e: 3, 12
+#    = [3, 12]
 f = d.2, 12
 
+# Four numbers added together
+# = 19
+g = 1 + 2 + 12 + 4
+
+# Three numbers added together
+# = 15
+h = 10 + 2 + 3
+
+# List of 9 numbers
+i = 1, 2, 3, 4, 5, 6, 7, 8, 9
+
+j = 3
+
+# Index j of i
+# j = 3
+# i.3
+# = 4
+k = i.j
+
+# List of 1 with only 1 element
+# stored as non-list 
+# = 1
+m = 1,
+
+# Equal to m
+# m = 1
+#   = 1
+n = m
+
+# List of a, b
+# = [10, 5]
+o = a, b
+
+# Index 1 of o + k
+# o.1 = 5
+# 5 + k
+# k = 4, so 5 + 4
+# = 9
+p = o.1 + k
+
+# Correct output: 15
 out c
+
+# Correct output: [3, 12]
 out f
+
+# Correct output: 19
+out g
+
+# Correct output: 15
+out h
+
+# Correct output: 4
+out k
+
+# Correct output: 1
+out m
+
+# Correct output: 1
+out n
+
+# Correct output: 9
+out p
+
+out i.j
