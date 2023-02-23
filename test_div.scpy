@@ -1,0 +1,6 @@
+a = 10
+b = 2
+c = a / b + 3
+
+# Correct answer: 8
+out c

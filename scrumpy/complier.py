@@ -5,6 +5,7 @@ from typing import (
 OPERATIONS = [
     "+", 
     "-",
+    "/",
 ]
 
 VARS = {}
@@ -21,14 +22,17 @@ def _check_syntax(content: str) -> bool:
     return True
 
 def _decode_value(value: Any) -> None:
-    if "." in str(value):
+    if "." in str(value) and not isinstance(value, float):
         var_name, var_index = value.split(".")
         var_index = _decode_value(var_index)
         return _decode_value(VARS[var_name][var_index])
     elif value in VARS:
         return _decode_value(VARS[value])
     else:
-        return int(value)
+        if "." in str(value):
+            return float(value)
+        else:
+            return int(value)
 
 
 def _decode_var_value(var_value: Any) -> Any:
@@ -47,7 +51,7 @@ def _decode_var_value(var_value: Any) -> Any:
 def _assign_var(var_name: str, var_value: Any) -> None:
     VARS[var_name] = _decode_var_value(var_value)
     var = VARS[var_name]
-    # print(f"{var=}")
+    print(f"{var=}")
     if type(var) == list:
         return
     var_summation = None
@@ -59,17 +63,23 @@ def _assign_var(var_name: str, var_value: Any) -> None:
             var_operation = v
             var_next = _decode_value(var.split(" ")[i+1])
             var_previous = var_summation or _decode_value(var.split(" ")[i-1])
+            print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
+
             if var_operation == "+":
                 if var_summation is None:
                     var_summation = var_previous + var_next
                 else: 
                     var_summation += var_next
-            if var_operation == "-":
+            elif var_operation == "-":
                 if var_summation is None:
                     var_summation = var_previous - var_next
                 else: 
                     var_summation -= var_next
-            # print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
+            elif var_operation == "/":
+                if var_summation is None:
+                    var_summation = var_previous / var_next
+                else: 
+                    var_summation /= var_next
     if var_operation is not None:
         VARS[var_name] = var_summation
 
