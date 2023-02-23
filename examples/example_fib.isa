@@ -1,7 +1,14 @@
-a = 1
+a = 0
+b = 1
+c = 0
+
+out a
+out b
 
 startpoint fib
-a = a + a
-out a
+c = a + b
+out c
+a = b
+b = c + b
 endpoint fib
-goto fib until a > 1000
+goto fib until c > 1000
