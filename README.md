@@ -1,2 +1,2 @@
-# ScrumPYv2
- A second attempt at ScrumPY, my own (stupid) language made in Python.
+# Isassembly
+My own version of assembly, Isassembly.

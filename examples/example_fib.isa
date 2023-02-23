@@ -1,0 +1,7 @@
+a = 1
+
+startpoint fib
+a = a + a
+out a
+endpoint fib
+goto fib until a > 1000

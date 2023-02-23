@@ -1,2 +1,2 @@
 from scrumpy import complier
-complier.run("examples/test_point.scpy")
+complier.run("examples/example_fib.isa")
