@@ -176,8 +176,9 @@ def _run(content: str) -> None:
                     if arg1_decode <= arg2_decode: run = False
                 for pline in plines:
                     _unpack_line(pline)
-
-
+        elif line.startswith("input"):
+            _, var_name = line.split(" ")
+            VARS[var_name] = _fully_decode(input(""))
 
         if not no_run:
             _unpack_line(line)

@@ -1,0 +1,7 @@
+outstr Input a number
+input a
+outstr Input another number
+input b
+c = a + b
+outstr The sum of those numbers is
+out c
