@@ -2,6 +2,8 @@ from typing import (
     Any,
 )
 
+import time
+
 OPERATIONS = [
     "+", 
     "-",
@@ -11,6 +13,7 @@ OPERATIONS = [
 ]
 
 VARS = {}
+POINTS = {}
 
 def run(filepath: str) -> None:
     with open(filepath) as fp:
@@ -51,10 +54,10 @@ def _decode_var_value(var_value: Any) -> Any:
     return var_value_list_segments[0]
 
 def _assign_var(var_name: str, var_value: Any) -> None:
-    VARS[var_name] = _decode_var_value(var_value)
-    var = VARS[var_name]
+    var = var_value
     # print(f"{var=}")
-    if type(var) == list:
+    if isinstance(_decode_var_value(var_value), list):
+        VARS[var_name] = _decode_var_value(var_value)
         return
     var_summation = None
     var_previous = None
@@ -64,6 +67,7 @@ def _assign_var(var_name: str, var_value: Any) -> None:
         if v in OPERATIONS:
             var_operation = v
             var_next = _decode_value(var.split(" ")[i+1])
+            # print(var.split(" "))
             var_previous = var_summation or _decode_value(var.split(" ")[i-1])
             # print(f"{var_operation=}\n{var_next=}\n{var_previous=}\n{var_summation=}\n---")
 
@@ -94,6 +98,8 @@ def _assign_var(var_name: str, var_value: Any) -> None:
                     var_summation **= var_next
     if var_operation is not None:
         VARS[var_name] = var_summation
+        return
+    VARS[var_name] = _decode_var_value(var_value)
 
 def _fully_decode(item: str) -> int:
     while True:
@@ -123,8 +129,55 @@ def _unpack_line(line: str) -> None:
     line_segments = line.split(" ")
     if line_segments[0] == "out":
         return _output(list(line_segments[1:])[0])
+    elif line_segments[0] == "outstr":
+        return print(line[7::])
 
 def _run(content: str) -> None:
-    for line_content in content.split("\n"):
-        _unpack_line(line_content)
-        
+    lines = content.split("\n")
+    no_run = False
+    for line_no, line in enumerate(lines):
+        if line.startswith("startpoint"):
+            POINTS[line.split(" ")[1]] = {
+                "start": line_no,
+                "end": None
+            }
+            no_run = True
+        elif line.startswith("endpoint"):
+            POINTS[line.split(" ")[1]]["end"] = line_no
+            no_run = False
+        elif line.startswith("goto"):
+            _, point, _, arg1, condition, arg2 = line.split(" ")
+            plines = []
+            for pline_no, pline in enumerate(lines):
+                if pline_no > POINTS[point]["start"] and pline_no < POINTS[point]["end"]:
+                    plines.append(pline)
+            run = True
+            while run:
+                arg1_decode = _fully_decode(arg1)
+                if "." in str(arg1_decode):
+                    arg1_decode = float(arg1_decode)
+                else:
+                    arg1_decode = int(arg1_decode)
+
+                arg2_decode = _fully_decode(arg2)
+                if "." in str(arg2_decode):
+                    arg2_decode = float(arg2_decode)
+                else:
+                    arg2_decode = int(arg2_decode)
+                if condition == ">":
+                    if arg1_decode > arg2_decode: run = False
+                elif condition == "=":
+                    if arg1_decode == arg2_decode: run = False
+                elif condition == ">=":
+                    if arg1_decode >= arg2_decode: run = False
+                elif condition == "<":
+                    if arg1_decode < arg2_decode: run = False
+                elif condition == "<=":
+                    if arg1_decode <= arg2_decode: run = False
+                for pline in plines:
+                    _unpack_line(pline)
+
+
+
+        if not no_run:
+            _unpack_line(line)

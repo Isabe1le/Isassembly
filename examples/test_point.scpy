@@ -1,0 +1,18 @@
+a = 1
+
+startpoint countup
+out a
+a = a + 1
+endpoint countup
+goto countup until a = 10
+
+outstr Counted up to 10!
+
+b = 10
+startpoint countdown
+out b
+b = b - 1
+endpoint countdown
+goto countdown until b = 0
+
+outstr Counted down to 0!
