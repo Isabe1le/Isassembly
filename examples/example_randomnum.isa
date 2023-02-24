@@ -1,0 +1,5 @@
+# random varname lowerbound upperbound (ints only) (inclusive)
+
+upper = 100
+random a 0 upper
+out a

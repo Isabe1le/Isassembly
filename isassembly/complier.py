@@ -2,6 +2,7 @@ from typing import (
     Any,
     Union,
 )
+import random
 
 OPERATIONS = [
     "+", 
@@ -128,6 +129,12 @@ def _unpack_line(line: str) -> None:
         return _assign_var(line_segments_if_var[0], line_segments_if_var[1])
     line_segments = line.split(" ")
     if line_segments[0] == "out":
+        return _output(list(line_segments)[1])
+    if line_segments[0] == "random":
+        varname = line_segments[1]
+        lowerbound = _fully_decode(line_segments[2])
+        upperbound = _fully_decode(line_segments[3])
+        VARS[varname] = random.randint(lowerbound, upperbound+1)
         return _output(list(line_segments)[1])
     elif line_segments[0] == "outstr":
         return print(line[7::])
