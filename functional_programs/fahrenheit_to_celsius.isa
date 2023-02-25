@@ -1,0 +1,11 @@
+# (c°F − 32) × 5/9 = y°C
+
+outstr What temperature in fahrenheit do you wish to convert to celsius?
+
+input f
+f = f - 32
+fn = 5 / 9
+f = f * fn
+
+outstr That temperature in celsius is:
+out f

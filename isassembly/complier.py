@@ -130,12 +130,12 @@ def _unpack_line(line: str) -> None:
     line_segments = line.split(" ")
     if line_segments[0] == "out":
         return _output(list(line_segments)[1])
-    if line_segments[0] == "random":
+    elif line_segments[0] == "random":
         varname = line_segments[1]
         lowerbound = _fully_decode(line_segments[2])
         upperbound = _fully_decode(line_segments[3])
-        VARS[varname] = random.randint(lowerbound, upperbound+1)
-        return _output(list(line_segments)[1])
+        VARS[varname] = random.randint(lowerbound, upperbound)
+        return
     elif line_segments[0] == "outstr":
         return print(line[7::])
     elif line_segments[0] == "TERMINATE":
