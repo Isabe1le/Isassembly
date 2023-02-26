@@ -136,6 +136,11 @@ def _unpack_line(line: str) -> None:
         upperbound = _fully_decode(line_segments[3])
         VARS[varname] = random.randint(lowerbound, upperbound)
         return
+    elif line_segments[0] == "storelen":
+        array_name = line_segments[1]
+        new_var = line_segments[2]
+        VARS[new_var] = len(_fully_decode(array_name))
+        return
     elif line_segments[0] == "outstr":
         return print(line[7::])
     elif line_segments[0] == "TERMINATE":
